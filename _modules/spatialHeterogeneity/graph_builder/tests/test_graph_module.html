@@ -1,0 +1,263 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>spatialHeterogeneity.graph_builder.tests.test_graph_module &mdash; spatialHeterogeneity  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> spatialHeterogeneity
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">General</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Gallery</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/overview.html">Overview of ATHENA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/methodology.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/introduction-spatialOmics.html">SpatialOmics Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_overview.html">API Overview</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">spatialHeterogeneity</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>spatialHeterogeneity.graph_builder.tests.test_graph_module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for spatialHeterogeneity.graph_builder.tests.test_graph_module</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">spatialHeterogeneity.graph_builder.knn_graph_builder</span> <span class="kn">import</span> <span class="n">KNNGraphBuilder</span>
+<span class="kn">from</span> <span class="nn">spatialHeterogeneity.graph_builder.radius_graph_builder</span> <span class="kn">import</span> <span class="n">RadiusGraphBuilder</span>
+<span class="kn">from</span> <span class="nn">spatialHeterogeneity.graph_builder.contact_graph_builder</span> <span class="kn">import</span> <span class="n">ContactGraphBuilder</span>
+<span class="kn">from</span> <span class="nn">spatialHeterogeneity.graph_builder.constants</span> <span class="kn">import</span> <span class="n">GRAPH_BUILDER_DEFAULT_PARAMS</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+<div class="viewcode-block" id="ndata"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.graph_builder.tests.test_graph_module.html#spatialHeterogeneity.graph_builder.tests.test_graph_module.ndata">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;module&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ndata</span><span class="p">():</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span><span class="o">-</span><span class="mi">30</span><span class="p">),</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span><span class="o">-</span><span class="mi">40</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">nodes</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="masks"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.graph_builder.tests.test_graph_module.html#spatialHeterogeneity.graph_builder.tests.test_graph_module.masks">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;module&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">masks</span><span class="p">():</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">5</span>
+
+    <span class="n">masks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">),</span> <span class="s1">&#39;int8&#39;</span><span class="p">)</span>
+    <span class="n">masks</span><span class="p">[</span><span class="mi">23</span><span class="p">:</span><span class="mi">23</span><span class="o">+</span><span class="n">s</span><span class="p">,</span> <span class="mi">23</span><span class="p">:</span><span class="mi">23</span><span class="o">+</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">masks</span><span class="p">[</span><span class="mi">23</span><span class="o">-</span><span class="mi">3</span><span class="o">-</span><span class="n">s</span><span class="p">:</span><span class="mi">23</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">23</span><span class="p">:</span><span class="mi">23</span><span class="o">+</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">masks</span><span class="p">[</span><span class="mi">23</span><span class="o">+</span><span class="n">s</span><span class="o">+</span><span class="mi">4</span><span class="p">:</span><span class="mi">23</span><span class="o">+</span><span class="mi">4</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="mi">23</span><span class="p">:</span><span class="mi">23</span><span class="o">+</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">masks</span><span class="p">[</span><span class="mi">23</span><span class="p">:</span><span class="mi">23</span><span class="o">+</span><span class="n">s</span><span class="p">,</span> <span class="mi">23</span><span class="o">-</span><span class="n">s</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="mi">23</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">masks</span><span class="p">[</span><span class="mi">23</span><span class="p">:</span><span class="mi">23</span><span class="o">+</span><span class="n">s</span><span class="p">,</span> <span class="mi">23</span><span class="o">+</span><span class="n">s</span><span class="o">+</span><span class="mi">6</span><span class="p">:</span><span class="mi">23</span><span class="o">+</span><span class="mi">6</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="k">return</span> <span class="n">masks</span></div>
+
+<div class="viewcode-block" id="test_knn_graph_builder"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.graph_builder.tests.test_graph_module.html#spatialHeterogeneity.graph_builder.tests.test_graph_module.test_knn_graph_builder">[docs]</a><span class="k">def</span> <span class="nf">test_knn_graph_builder</span><span class="p">(</span><span class="n">ndata</span><span class="p">):</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">GRAPH_BUILDER_DEFAULT_PARAMS</span><span class="p">[</span><span class="s1">&#39;knn&#39;</span><span class="p">]</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;n_neighbors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">builder</span> <span class="o">=</span> <span class="n">KNNGraphBuilder</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">builder</span><span class="p">(</span><span class="n">ndata</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ndata</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">==</span> <span class="mi">21</span></div>
+
+<div class="viewcode-block" id="test_radius_graph_bulder"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.graph_builder.tests.test_graph_module.html#spatialHeterogeneity.graph_builder.tests.test_graph_module.test_radius_graph_bulder">[docs]</a><span class="k">def</span> <span class="nf">test_radius_graph_bulder</span><span class="p">(</span><span class="n">ndata</span><span class="p">):</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">GRAPH_BUILDER_DEFAULT_PARAMS</span><span class="p">[</span><span class="s1">&#39;radius&#39;</span><span class="p">]</span>
+    <span class="n">builder</span> <span class="o">=</span> <span class="n">RadiusGraphBuilder</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">builder</span><span class="p">(</span><span class="n">ndata</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ndata</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ndata</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="test_contact_graph_builder"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.graph_builder.tests.test_graph_module.html#spatialHeterogeneity.graph_builder.tests.test_graph_module.test_contact_graph_builder">[docs]</a><span class="k">def</span> <span class="nf">test_contact_graph_builder</span><span class="p">(</span><span class="n">masks</span><span class="p">):</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">masks</span><span class="p">)</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">nodes</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">ndata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">nodes</span><span class="p">)</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">GRAPH_BUILDER_DEFAULT_PARAMS</span><span class="p">[</span><span class="s1">&#39;contact&#39;</span><span class="p">]</span>
+    <span class="n">builder</span> <span class="o">=</span> <span class="n">ContactGraphBuilder</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">builder</span><span class="p">(</span><span class="n">ndata</span><span class="o">=</span><span class="n">ndata</span><span class="p">,</span> <span class="n">topo_data</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="n">masks</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ndata</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">edges</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright IBM Corp. 2021.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

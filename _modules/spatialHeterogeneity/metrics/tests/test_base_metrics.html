@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>spatialHeterogeneity.metrics.tests.test_base_metrics &mdash; spatialHeterogeneity  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> spatialHeterogeneity
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">General</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Gallery</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/overview.html">Overview of ATHENA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/methodology.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/introduction-spatialOmics.html">SpatialOmics Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_overview.html">API Overview</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">spatialHeterogeneity</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>spatialHeterogeneity.metrics.tests.test_base_metrics</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for spatialHeterogeneity.metrics.tests.test_base_metrics</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">spatialHeterogeneity.metrics.heterogeneity.base_metrics</span> <span class="kn">import</span> <span class="n">_shannon</span><span class="p">,</span> <span class="n">_shannon_evenness</span><span class="p">,</span> <span class="n">_simpson</span><span class="p">,</span>\
+    <span class="n">_simpson_evenness</span><span class="p">,</span> <span class="n">_gini_simpson</span><span class="p">,</span> <span class="n">_richness</span><span class="p">,</span> <span class="n">_hill_number</span><span class="p">,</span> <span class="n">_renyi</span><span class="p">,</span> <span class="n">_abundance</span><span class="p">,</span> <span class="n">_quadratic_entropy</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
+<span class="n">obs</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]]</span>
+<span class="n">_counts</span> <span class="o">=</span> <span class="p">[</span><span class="n">Counter</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">obs</span><span class="p">]</span>
+
+<span class="n">_expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<div class="viewcode-block" id="test_shannon"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.metrics.tests.test_base_metrics.html#spatialHeterogeneity.metrics.tests.test_base_metrics.test_shannon">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;input, res&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_counts</span><span class="p">,</span> <span class="n">_expected</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">test_shannon</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">_shannon</span><span class="p">(</span><span class="nb">input</span><span class="p">),</span><span class="n">res</span><span class="p">)</span></div>
+
+<span class="n">_expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<div class="viewcode-block" id="test_shannon_evenness"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.metrics.tests.test_base_metrics.html#spatialHeterogeneity.metrics.tests.test_base_metrics.test_shannon_evenness">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;input, res&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_counts</span><span class="p">,</span> <span class="n">_expected</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">test_shannon_evenness</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">_shannon_evenness</span><span class="p">(</span><span class="nb">input</span><span class="p">),</span> <span class="n">res</span><span class="p">)</span></div>
+
+<span class="n">_expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+<div class="viewcode-block" id="test_simpson"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.metrics.tests.test_base_metrics.html#spatialHeterogeneity.metrics.tests.test_base_metrics.test_simpson">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;input, res&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_counts</span><span class="p">,</span> <span class="n">_expected</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">test_simpson</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">_simpson</span><span class="p">(</span><span class="nb">input</span><span class="p">),</span> <span class="n">res</span><span class="p">)</span></div>
+
+<span class="n">_expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<div class="viewcode-block" id="test_simpson_evenness"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.metrics.tests.test_base_metrics.html#spatialHeterogeneity.metrics.tests.test_base_metrics.test_simpson_evenness">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;input, res&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_counts</span><span class="p">,</span> <span class="n">_expected</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">test_simpson_evenness</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">_simpson_evenness</span><span class="p">(</span><span class="nb">input</span><span class="p">),</span> <span class="n">res</span><span class="p">)</span></div>
+
+<span class="n">_expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+<div class="viewcode-block" id="test_gini_simpson"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.metrics.tests.test_base_metrics.html#spatialHeterogeneity.metrics.tests.test_base_metrics.test_gini_simpson">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;input, res&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_counts</span><span class="p">,</span> <span class="n">_expected</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">test_gini_simpson</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">_gini_simpson</span><span class="p">(</span><span class="nb">input</span><span class="p">),</span> <span class="n">res</span><span class="p">)</span></div>
+
+<span class="n">_expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<div class="viewcode-block" id="test_richness"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.metrics.tests.test_base_metrics.html#spatialHeterogeneity.metrics.tests.test_base_metrics.test_richness">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;input, res&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_counts</span><span class="p">,</span> <span class="n">_expected</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">test_richness</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">_richness</span><span class="p">(</span><span class="nb">input</span><span class="p">),</span><span class="n">res</span><span class="p">)</span></div>
+
+<span class="n">_expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)]</span>
+<div class="viewcode-block" id="test_hill_number"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.metrics.tests.test_base_metrics.html#spatialHeterogeneity.metrics.tests.test_base_metrics.test_hill_number">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;input, res&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_counts</span><span class="p">,</span> <span class="n">_expected</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">test_hill_number</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">_hill_number</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">)</span> <span class="o">==</span> <span class="n">res</span></div>
+
+<span class="n">_expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)]</span>
+<div class="viewcode-block" id="test_renyi"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.metrics.tests.test_base_metrics.html#spatialHeterogeneity.metrics.tests.test_base_metrics.test_renyi">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;input, res&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_counts</span><span class="p">,</span> <span class="n">_expected</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">test_renyi</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">_renyi</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">),</span><span class="n">res</span><span class="p">)</span></div>
+
+<span class="n">_expected</span> <span class="o">=</span> <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">])]</span>
+<div class="viewcode-block" id="test_abundance"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.metrics.tests.test_base_metrics.html#spatialHeterogeneity.metrics.tests.test_base_metrics.test_abundance">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;input, res&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_counts</span><span class="p">,</span> <span class="n">_expected</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">test_abundance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">_abundance</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">res</span><span class="p">))</span></div>
+
+<span class="c1"># 1.) No difference between groups, i.e. entropy should be 0</span>
+<span class="c1"># 2.) Difference is always 1 between all pair-wise groups and all groups are equally abundant</span>
+<span class="c1"># entropy should be (1/N)**2</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">ascii_lowercase</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">_features</span> <span class="o">=</span> <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="mi">5</span><span class="p">)),</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ascii_lowercase</span><span class="p">[:</span><span class="n">n</span><span class="p">]]),</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="n">n</span><span class="p">)),</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ascii_lowercase</span><span class="p">[:</span><span class="n">n</span><span class="p">]])]</span>
+<span class="n">_counts</span> <span class="o">=</span> <span class="p">[</span><span class="n">Counter</span><span class="p">({</span><span class="n">key</span><span class="p">:</span><span class="mi">1</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ascii_lowercase</span><span class="p">[:</span><span class="n">n</span><span class="p">]}),</span> <span class="n">Counter</span><span class="p">({</span><span class="n">key</span><span class="p">:</span><span class="mi">1</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ascii_lowercase</span><span class="p">[:</span><span class="n">n</span><span class="p">]})]</span>
+<span class="n">_input</span> <span class="o">=</span> <span class="p">[(</span><span class="n">f</span><span class="p">,</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_features</span><span class="p">,</span> <span class="n">_counts</span><span class="p">)]</span>
+<span class="n">_expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">n</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">n</span><span class="p">)]</span>
+<div class="viewcode-block" id="test_quadratic_entropy"><a class="viewcode-back" href="../../../../api/spatialHeterogeneity.metrics.tests.test_base_metrics.html#spatialHeterogeneity.metrics.tests.test_base_metrics.test_quadratic_entropy">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;input, res&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_input</span><span class="p">,</span> <span class="n">_expected</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">test_quadratic_entropy</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+    <span class="n">feat</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="nb">input</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">_quadratic_entropy</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">feat</span><span class="p">,</span> <span class="n">metric_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="n">scale</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">res</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright IBM Corp. 2021.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
